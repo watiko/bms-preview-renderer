@@ -1,9 +1,7 @@
-import {
-  expandGlob,
-  walk,
-  WalkEntry,
-} from "https://deno.land/std@0.88.0/fs/mod.ts";
+import { WalkEntry } from "https://deno.land/std@0.88.0/fs/mod.ts";
 import { dirname } from "https://deno.land/std@0.88.0/path/mod.ts";
+
+import { walkFiles } from "./utils/fs.ts";
 
 export async function* findBmsDirs(root: string): AsyncGenerator<string> {
   const emitted = new Set();
@@ -18,12 +16,8 @@ export async function* findBmsDirs(root: string): AsyncGenerator<string> {
   }
 }
 
-export const expandGlob2 = expandGlob;
-
 export function findBmsFiles(bmsDir: string): AsyncIterableIterator<WalkEntry> {
-  return walk(bmsDir, {
-    includeDirs: false,
-    includeFiles: true,
+  return walkFiles(bmsDir, {
     match: [/\.(bme|bms|bml)$/],
   });
 }
@@ -31,9 +25,15 @@ export function findBmsFiles(bmsDir: string): AsyncIterableIterator<WalkEntry> {
 export function findPreviewFiles(
   bmsDir: string,
 ): AsyncIterableIterator<WalkEntry> {
-  return walk(bmsDir, {
-    includeDirs: false,
-    includeFiles: true,
+  return walkFiles(bmsDir, {
     match: [/preview.*\.(wav|ogg)$/],
+  });
+}
+
+export function findAudioFiles(
+  bmsDir: string,
+): AsyncIterableIterator<WalkEntry> {
+  return walkFiles(bmsDir, {
+    match: [/.*\.(wav|ogg)$/],
   });
 }

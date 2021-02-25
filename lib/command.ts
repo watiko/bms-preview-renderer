@@ -3,7 +3,7 @@ import { exists } from "https://deno.land/std@0.88.0/fs/mod.ts";
 import { Semaphore } from "https://deno.land/x/semaphore@v1.1.0/mod.ts";
 
 import { findBmsDirs } from "./find.ts";
-import { bms2preview, ResultType } from "./usecase.ts";
+import { bms2previewWithResample, ResultType } from "./usecase.ts";
 
 export class CommandError extends Error {
   constructor(message: string) {
@@ -23,11 +23,10 @@ export async function bms2previewCommand(bmsDir: string) {
   }
 
   log.info(`start: ${bmsDir}`);
-  const result = await bms2preview(bmsDir);
-  switch (result) {
+  const result = await bms2previewWithResample(bmsDir);
+  switch (result.type) {
     case ResultType.BmsFileNotFound:
       log.error(`No BMS file was found: ${bmsDir}`);
-      Deno.exit(1);
       return;
     case ResultType.PreviewFileFound:
       log.info(`The preview file was found: ${bmsDir}`);
