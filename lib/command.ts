@@ -1,5 +1,6 @@
 import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
 import { exists } from "https://deno.land/std@0.88.0/fs/mod.ts";
+import { resolve } from "https://deno.land/std@0.88.0/path/mod.ts";
 import { Semaphore } from "https://deno.land/x/semaphore@v1.1.0/mod.ts";
 
 import { findBmsDirs } from "./find.ts";
@@ -12,22 +13,27 @@ export class CommandError extends Error {
   }
 }
 
-export async function bms2previewCommand(bmsDir: string) {
-  if (!(await exists(bmsDir))) {
-    throw new CommandError(`${bmsDir} does not exist.`);
+async function ensureDir(path: string): Promise<string> {
+  if (!(await exists(path))) {
+    throw new CommandError(`${path} does not exist.`);
   }
 
-  const bmsDirInfo = await Deno.lstat(bmsDir);
+  const bmsDirInfo = await Deno.lstat(path);
   if (!bmsDirInfo.isDirectory) {
-    throw new CommandError(`${bmsDir} is not directory.`);
+    throw new CommandError(`${path} is not directory.`);
   }
+
+  return resolve(path);
+}
+
+export async function bms2previewCommand(bmsDir: string) {
+  bmsDir = await ensureDir(bmsDir);
 
   log.info(`start: ${bmsDir}`);
   const result = await bms2preview(bmsDir);
-  switch (result) {
+  switch (result.type) {
     case ResultType.BmsFileNotFound:
       log.error(`No BMS file was found: ${bmsDir}`);
-      Deno.exit(1);
       return;
     case ResultType.PreviewFileFound:
       log.info(`The preview file was found: ${bmsDir}`);
@@ -53,23 +59,27 @@ export async function bms2previewRecursivelyCommand(
     throw new CommandError(`parallelism should be greater than 0`);
   }
 
+  rootDir = await ensureDir(rootDir);
+
   const semaphore = new Semaphore(parallelism);
+  const runTask = async (bmsDir: string, release: () => void) => {
+    try {
+      await bms2previewCommand(bmsDir);
+    } catch (e) {
+      if (e instanceof CommandError) {
+        log.error(e);
+      }
+      throw e;
+    } finally {
+      release();
+    }
+  };
 
   log.debug(`root: ${rootDir}`);
   for await (const bmsDir of findBmsDirs(rootDir)) {
     log.debug(`walk: ${bmsDir}`);
 
     const release = await semaphore.acquire();
-    try {
-      await bms2previewCommand(bmsDir);
-    } catch (e) {
-      if (e instanceof CommandError) {
-        log.error(e);
-        continue;
-      }
-      throw e;
-    } finally {
-      release();
-    }
+    runTask(bmsDir, release);
   }
 }
