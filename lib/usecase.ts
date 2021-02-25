@@ -38,9 +38,17 @@ export async function bms2preview(bmsDir: string): Promise<PreviewResult> {
     const previewFileName = "preview_music.ogg";
     const previewFilePath = `${bmsDir}/${previewFileName}`;
 
-    log.debug(`link (${bmsDir}) to (${tmpBmsDir})`);
-    await ensureLinkRecursively(bmsDir, tmpBmsDir);
-    await makeAllAudioFilesAcceptable(tmpBmsDir);
+    try {
+      log.debug(`link (${bmsDir}) to (${tmpBmsDir})`);
+      await ensureLinkRecursively(bmsDir, tmpBmsDir);
+      await makeAllAudioFilesAcceptable(tmpBmsDir);
+    } catch (e) {
+      if (e instanceof ConvertError) {
+        log.error(e.message);
+        return { type: ResultType.ConvertFailed };
+      }
+      throw e;
+    }
 
     const result = await bms2previewSimple({
       bmsDir: tmpBmsDir,
