@@ -4,7 +4,7 @@ import {
   bms2wav,
   ConvertError,
   createPreview,
-  resampleAllAudioFiles,
+  makeAllAudioFilesAcceptable,
 } from "./converter.ts";
 import {
   ensureLinkRecursively,
@@ -31,7 +31,7 @@ export type PreviewResult = {
   previewPath: string;
 };
 
-export async function bms2previewWithResample(
+export async function bms2preview(
   bmsDir: string,
 ): Promise<PreviewResult> {
   return await withTempDir({}, async (tmpBmsDir) => {
@@ -39,9 +39,9 @@ export async function bms2previewWithResample(
     const previewFilePath = `${bmsDir}/${previewFileName}`;
 
     await ensureLinkRecursively(bmsDir, tmpBmsDir);
-    await resampleAllAudioFiles(tmpBmsDir);
+    await makeAllAudioFilesAcceptable(tmpBmsDir);
 
-    const result = await bms2preview({
+    const result = await bms2previewSimple({
       bmsDir: tmpBmsDir,
       previewFileName,
     });
@@ -59,7 +59,7 @@ export async function bms2previewWithResample(
   });
 }
 
-export async function bms2preview(p: {
+async function bms2previewSimple(p: {
   bmsDir: string;
   previewFileName: string;
 }): Promise<PreviewResult> {

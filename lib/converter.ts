@@ -1,4 +1,5 @@
 import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
+import * as path from "https://deno.land/std@0.88.0/path/mod.ts";
 
 import { withTempFile } from "./utils/fs.ts";
 import { findAudioFiles } from "./find.ts";
@@ -93,12 +94,30 @@ async function readSampleRate(audioPath: string): Promise<number> {
   return parseInt(stdout, 10);
 }
 
+async function readChannelsNumber(audioPath: string): Promise<number> {
+  const { status, stdout, stderr } = await runCmd([
+    "sox",
+    "--i",
+    "-c",
+    audioPath,
+  ]);
+
+  if (!status.success) {
+    throw new ConvertError(
+      `sox was failed to read number of channels: ${stderr}`,
+    );
+  }
+
+  return parseInt(stdout, 10);
+}
+
 async function resampleAs44100(audioPath: string): Promise<void> {
   if ((await readSampleRate(audioPath)) === 44100) {
     return;
   }
 
-  await withTempFile({ suffix: ".wav" }, async (tmpPath) => {
+  const ext = path.extname(audioPath);
+  await withTempFile({ suffix: `.${ext}` }, async (tmpPath) => {
     const { status, stderr } = await runCmd([
       "sox",
       audioPath,
@@ -111,13 +130,38 @@ async function resampleAs44100(audioPath: string): Promise<void> {
       throw new ConvertError(`sox was failed to resample: ${stderr}`);
     }
 
-    // move
     await Deno.copyFile(tmpPath, audioPath);
   });
 }
 
-export async function resampleAllAudioFiles(bmsDir: string): Promise<void> {
+async function mono2stereo(audioPath: string): Promise<void> {
+  if ((await readChannelsNumber(audioPath)) === 2) {
+    return;
+  }
+
+  const ext = path.extname(audioPath);
+  await withTempFile({ suffix: `.${ext}` }, async (tmpPath) => {
+    const { status, stderr } = await runCmd([
+      "sox",
+      audioPath,
+      "-c",
+      "2",
+      tmpPath,
+    ]);
+
+    if (!status.success) {
+      throw new ConvertError(`sox was failed to mono2stereo: ${stderr}`);
+    }
+
+    await Deno.copyFile(tmpPath, audioPath);
+  });
+}
+
+export async function makeAllAudioFilesAcceptable(
+  bmsDir: string,
+): Promise<void> {
   for await (const entry of findAudioFiles(bmsDir)) {
     await resampleAs44100(entry.path);
+    await mono2stereo(entry.path);
   }
 }
