@@ -53,22 +53,24 @@ export async function bms2previewRecursivelyCommand(
   }
 
   const semaphore = new Semaphore(parallelism);
+  const runTask = async (bmsDir: string, release: () => void) => {
+    try {
+      await bms2previewCommand(bmsDir);
+    } catch (e) {
+      if (e instanceof CommandError) {
+        log.error(e);
+      }
+      throw e;
+    } finally {
+      release();
+    }
+  };
 
   log.debug(`root: ${rootDir}`);
   for await (const bmsDir of findBmsDirs(rootDir)) {
     log.debug(`walk: ${bmsDir}`);
 
     const release = await semaphore.acquire();
-    try {
-      await bms2previewCommand(bmsDir);
-    } catch (e) {
-      if (e instanceof CommandError) {
-        log.error(e);
-        continue;
-      }
-      throw e;
-    } finally {
-      release();
-    }
+    runTask(bmsDir, release);
   }
 }
