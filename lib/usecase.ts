@@ -34,6 +34,11 @@ export type PreviewResult =
   };
 
 export async function bms2preview(bmsDir: string): Promise<PreviewResult> {
+  for await (const _ of findPreviewFiles(bmsDir)) {
+    log.debug(`The preview file was found: ${bmsDir}`);
+    return { type: ResultType.PreviewFileFound };
+  }
+
   return await withTempDir({}, async (tmpBmsDir) => {
     const previewFileName = "preview_music.ogg";
     const previewFilePath = `${bmsDir}/${previewFileName}`;
@@ -80,11 +85,6 @@ async function bms2previewSimple(p: {
     return { type: ResultType.BmsFileNotFound };
   }
   const bmsPath = bmsFileEntry.path;
-
-  for await (const _ of findPreviewFiles(p.bmsDir)) {
-    log.debug(`The preview file was found: ${p.bmsDir}`);
-    return { type: ResultType.PreviewFileFound };
-  }
 
   const result: ResultType.ConvertFailed | undefined = await withTempFile(
     {
