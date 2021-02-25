@@ -21,23 +21,24 @@ export enum ResultType {
   Success,
 }
 
-export type PreviewResult = {
-  type:
-    | ResultType.BmsFileNotFound
-    | ResultType.PreviewFileFound
-    | ResultType.ConvertFailed;
-} | {
-  type: ResultType.Success;
-  previewPath: string;
-};
+export type PreviewResult =
+  | {
+    type:
+      | ResultType.BmsFileNotFound
+      | ResultType.PreviewFileFound
+      | ResultType.ConvertFailed;
+  }
+  | {
+    type: ResultType.Success;
+    previewPath: string;
+  };
 
-export async function bms2preview(
-  bmsDir: string,
-): Promise<PreviewResult> {
+export async function bms2preview(bmsDir: string): Promise<PreviewResult> {
   return await withTempDir({}, async (tmpBmsDir) => {
     const previewFileName = "preview_music.ogg";
     const previewFilePath = `${bmsDir}/${previewFileName}`;
 
+    log.debug(`link (${bmsDir}) to (${tmpBmsDir})`);
     await ensureLinkRecursively(bmsDir, tmpBmsDir);
     await makeAllAudioFilesAcceptable(tmpBmsDir);
 
@@ -77,19 +78,22 @@ async function bms2previewSimple(p: {
     return { type: ResultType.PreviewFileFound };
   }
 
-  const result: ResultType.ConvertFailed | undefined = await withTempFile({
-    suffix: ".wav",
-  }, async (tmpWavPath) => {
-    log.debug(`Convert BMS files into a wav file: ${p.bmsDir}`);
-    await bms2wav(bmsPath, tmpWavPath);
+  const result: ResultType.ConvertFailed | undefined = await withTempFile(
+    {
+      suffix: ".wav",
+    },
+    async (tmpWavPath) => {
+      log.debug(`Convert BMS files into a wav file: ${p.bmsDir}`);
+      await bms2wav(bmsPath, tmpWavPath);
 
-    log.debug(`Create a preview file from the wav file: ${p.bmsDir}`);
-    await createPreview(tmpWavPath, previewPath);
+      log.debug(`Create a preview file from the wav file: ${p.bmsDir}`);
+      await createPreview(tmpWavPath, previewPath);
 
-    log.debug(`The preview file was created: ${p.bmsDir}`);
+      log.debug(`The preview file was created: ${p.bmsDir}`);
 
-    return undefined;
-  }).catch((e) => {
+      return undefined;
+    },
+  ).catch((e) => {
     if (e instanceof ConvertError) {
       log.error(e.message);
       return ResultType.ConvertFailed;
