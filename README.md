@@ -4,7 +4,6 @@
   - `npm install --global @watiko/bms-renderer`
   - libsndfile: `apt install libsndfile1-dev`
 - sox
-- ffmpeg
 
 ## Setup
 

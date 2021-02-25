@@ -1,11 +1,6 @@
 import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
 
-import {
-  bms2wav,
-  ConvertError,
-  createPreview,
-  removeSilentSection,
-} from "./converter.ts";
+import { bms2wav, ConvertError, createPreview } from "./converter.ts";
 import { withTempFile } from "./utils/file.ts";
 import { first } from "./utils/iterator.ts";
 import { findBmsFiles, findPreviewFiles } from "./find.ts";
@@ -35,9 +30,6 @@ export async function bms2preview(bmsDir: string): Promise<ResultType> {
 
     log.debug(`Convert BMS files into a wav file: ${bmsDir}`);
     await bms2wav(bmsPath, tmpWavPath);
-
-    log.debug(`Remove a silent section from the wav file: ${bmsDir}`);
-    await removeSilentSection(tmpWavPath);
 
     log.debug(`Create a preview file from the wav file: ${bmsDir}`);
     await createPreview(tmpWavPath, previewPath);
