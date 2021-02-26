@@ -63,6 +63,10 @@ export async function bms2previewRecursivelyCommand(
 
   const semaphore = new Semaphore(parallelism);
   const runTask = async (bmsDir: string, release: () => void) => {
+    // without this runtime's tick is not progress?
+    const reportHandler = setInterval(() => {
+      log.debug(`Processing: ${bmsDir}`);
+    }, 2000);
     try {
       await bms2previewCommand(bmsDir);
     } catch (e) {
@@ -71,6 +75,7 @@ export async function bms2previewRecursivelyCommand(
       }
       throw e;
     } finally {
+      clearInterval(reportHandler);
       release();
     }
   };

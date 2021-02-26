@@ -18,7 +18,7 @@ export async function* findBmsDirs(root: string): AsyncGenerator<string> {
 
 export function findBmsFiles(bmsDir: string): AsyncIterableIterator<WalkEntry> {
   return walkFiles(bmsDir, {
-    match: [/\.(bme|bms|bml)$/],
+    match: [/\.(bme|bms|bml)$/i],
   });
 }
 
@@ -26,7 +26,7 @@ export function findPreviewFiles(
   bmsDir: string,
 ): AsyncIterableIterator<WalkEntry> {
   return walkFiles(bmsDir, {
-    match: [/preview.*\.(wav|ogg)$/],
+    match: [/preview.*\.(wav|ogg)$/i],
   });
 }
 
@@ -34,6 +34,6 @@ export function findAudioFiles(
   bmsDir: string,
 ): AsyncIterableIterator<WalkEntry> {
   return walkFiles(bmsDir, {
-    match: [/.*\.(wav|ogg)$/],
+    match: [/.*\.(wav|ogg)$/i],
   });
 }
