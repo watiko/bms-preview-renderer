@@ -15,7 +15,7 @@ $ deno install \
   --allow-run \
   --unstable \
   --name bms-preview-renderer \
-  https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.0/cli.ts
+  https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.1/cli.ts
 ```
 
 ## Links
