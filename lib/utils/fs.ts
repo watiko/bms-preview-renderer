@@ -6,9 +6,11 @@ export async function withTempFile<T>(
   fn: (tempFilePath: string) => Promise<T>,
 ): Promise<T> {
   const tmp = await Deno.makeTempFile(options);
-  const result = await fn(tmp);
-  await Deno.remove(tmp);
-  return result;
+  try {
+    return fn(tmp);
+  } finally {
+    await Deno.remove(tmp);
+  }
 }
 
 export async function withTempDir<T>(
@@ -16,11 +18,13 @@ export async function withTempDir<T>(
   fn: (tempFilePath: string) => Promise<T>,
 ): Promise<T> {
   const tmp = await Deno.makeTempDir(options);
-  const result = await fn(tmp);
-  await Deno.remove(tmp, {
-    recursive: true,
-  });
-  return result;
+  try {
+    return fn(tmp);
+  } finally {
+    await Deno.remove(tmp, {
+      recursive: true,
+    });
+  }
 }
 
 export async function ensureLinkRecursively(srcRoot: string, destRoot: string) {
