@@ -70,10 +70,7 @@ export async function bms2previewRecursivelyCommand(
     try {
       await bms2previewCommand(bmsDir);
     } catch (e) {
-      if (e instanceof CommandError) {
-        log.error(e);
-      }
-      throw e;
+      log.error(`Failed to runTask with dir(${bmsDir}): ${e}`);
     } finally {
       clearInterval(reportHandler);
       release();
