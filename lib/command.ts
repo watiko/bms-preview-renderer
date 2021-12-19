@@ -1,7 +1,7 @@
-import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
-import { exists } from "https://deno.land/std@0.88.0/fs/mod.ts";
-import { resolve } from "https://deno.land/std@0.88.0/path/mod.ts";
-import { Semaphore } from "https://deno.land/x/semaphore@v1.1.0/mod.ts";
+import * as log from "@std/log/mod.ts";
+import { exists } from "@std/fs/mod.ts";
+import { resolve } from "@std/path/mod.ts";
+import { Semaphore } from "semaphore/mod.ts";
 
 import { findBmsDirs } from "./find.ts";
 import { bms2preview, ResultType } from "./usecase.ts";

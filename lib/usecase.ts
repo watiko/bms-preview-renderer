@@ -1,4 +1,4 @@
-import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
+import * as log from "@std/log/mod.ts";
 
 import {
   bms2wav,

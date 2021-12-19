@@ -1,9 +1,5 @@
-import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
-import {
-  Command,
-  ValidationError,
-} from "https://raw.githubusercontent.com/c4spar/deno-cliffy/e1a6bb2290b316d8359cdb0ed15a54bbbc46368d/command/mod.ts";
-// "https://deno.land/x/cliffy@v0.17.2/command/mod.ts";
+import * as log from "@std/log/mod.ts";
+import { Command, ValidationError } from "cliffy/command/mod.ts";
 
 import {
   bms2previewCommand,
