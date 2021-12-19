@@ -1,5 +1,5 @@
-import * as fs from "https://deno.land/std@0.88.0/fs/mod.ts";
-import { join, relative } from "https://deno.land/std@0.88.0/path/mod.ts";
+import * as fs from "@std/fs/mod.ts";
+import { join, relative } from "@std/path/mod.ts";
 
 export async function withTempFile<T>(
   options: Deno.MakeTempOptions,

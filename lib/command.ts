@@ -1,10 +1,10 @@
-import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
-import { exists } from "https://deno.land/std@0.88.0/fs/mod.ts";
-import { resolve } from "https://deno.land/std@0.88.0/path/mod.ts";
-import { Semaphore } from "https://deno.land/x/semaphore@v1.1.0/mod.ts";
+import * as log from "@std/log/mod.ts";
+import { resolve } from "@std/path/mod.ts";
+import { Semaphore } from "semaphore/mod.ts";
 
 import { findBmsDirs } from "./find.ts";
 import { bms2preview, ResultType } from "./usecase.ts";
+import { catcher } from "./utils/catcher.ts";
 
 export class CommandError extends Error {
   constructor(message: string) {
@@ -14,12 +14,15 @@ export class CommandError extends Error {
 }
 
 async function ensureDir(path: string): Promise<string> {
-  if (!(await exists(path))) {
-    throw new CommandError(`${path} does not exist.`);
+  const statResult = await catcher(() => Deno.lstat(path));
+  if (!statResult.ok) {
+    if (statResult.error instanceof Deno.errors.NotFound) {
+      throw new CommandError(`${path} does not exist.`);
+    }
+    throw statResult.error;
   }
 
-  const bmsDirInfo = await Deno.lstat(path);
-  if (!bmsDirInfo.isDirectory) {
+  if (!statResult.value.isDirectory) {
     throw new CommandError(`${path} is not directory.`);
   }
 

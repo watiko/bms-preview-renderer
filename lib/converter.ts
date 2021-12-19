@@ -1,5 +1,5 @@
-import * as log from "https://deno.land/std@0.88.0/log/mod.ts";
-import * as path from "https://deno.land/std@0.88.0/path/mod.ts";
+import * as log from "@std/log/mod.ts";
+import * as path from "@std/path/mod.ts";
 
 import { withTempFile } from "./utils/fs.ts";
 import { findAudioFiles } from "./find.ts";

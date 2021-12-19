@@ -1,5 +1,5 @@
-import { WalkEntry } from "https://deno.land/std@0.88.0/fs/mod.ts";
-import { dirname } from "https://deno.land/std@0.88.0/path/mod.ts";
+import { WalkEntry } from "@std/fs/mod.ts";
+import { dirname } from "@std/path/mod.ts";
 
 import { walkFiles } from "./utils/fs.ts";
 

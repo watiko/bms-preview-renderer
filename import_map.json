@@ -1,0 +1,10 @@
+{
+  "imports": {
+    "@std/fs/": "https://deno.land/std@0.118.0/fs/",
+    "@std/log/": "https://deno.land/std@0.118.0/log/",
+    "@std/path/": "https://deno.land/std@0.118.0/path/",
+    "@std/testing/": "https://deno.land/std@0.118.0/testing/",
+    "cliffy/command/": "https://deno.land/x/cliffy@v0.20.1/command/",
+    "semaphore/": "https://deno.land/x/semaphore@v1.1.0/"
+  }
+}

@@ -19,6 +19,14 @@ $ deno install \
   https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.2/cli.ts
 ```
 
+## Development
+
+- [trex](https://github.com/crewdevio/Trex)
+
+```console
+$ trex run dev
+```
+
 ## Links
 
 - https://gist.github.com/watiko/6c69fcd4b6b3d70cdf5af0d84ae31ef0
