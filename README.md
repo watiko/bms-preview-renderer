@@ -9,14 +9,11 @@
 
 ```bash
 $ deno install \
-  --allow-read \
-  --allow-write \
-  --allow-env \
-  --allow-run \
-  --unstable \
   --name bms-preview-renderer \
   --force \
-  https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.2/cli.ts
+  --allow-all \
+  --import-map=https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.3/import_map.json \
+  https://raw.githubusercontent.com/watiko/bms-preview-renderer/v1.0.3/cli.ts
 ```
 
 ## Development
