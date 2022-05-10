@@ -7,7 +7,7 @@ import {
   CommandError,
 } from "./lib/command.ts";
 
-async function setup(p: { debug: boolean }): Promise<void> {
+async function setup(p: { debug?: boolean }): Promise<void> {
   const logLevel = p.debug ? "DEBUG" : "INFO";
   await log.setup({
     handlers: {
@@ -39,7 +39,7 @@ async function main() {
       "render <dir:string>",
       "Create a preview of the given BMS directory",
     )
-    .action(async (p: { debug: boolean }, dir: string) => {
+    .action(async (p, dir) => {
       await setup(p);
       await bms2previewCommand(dir);
     });
@@ -57,7 +57,7 @@ async function main() {
       },
     )
     .action(
-      async (p: { debug: boolean; parallelism: number }, root: string) => {
+      async (p, root) => {
         await setup(p);
         await bms2previewRecursivelyCommand(root, p.parallelism);
       },

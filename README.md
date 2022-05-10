@@ -18,10 +18,8 @@ $ deno install \
 
 ## Development
 
-- [trex](https://github.com/crewdevio/Trex)
-
 ```console
-$ trex run dev
+$ deno task dev
 ```
 
 ## Links
