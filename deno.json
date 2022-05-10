@@ -1,5 +1,5 @@
 {
-  "scripts": {
+  "tasks": {
     "dev": "deno run --no-check --allow-all --import-map=./import_map.json ./cli.ts",
     "start": "deno run --allow-all --import-map=./import_map.json ./cli.ts",
     "test": "deno test --unstable --import-map=./import_map.json",
